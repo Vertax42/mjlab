@@ -17,11 +17,11 @@ def get_cube_spec(cube_size: float = 0.02, mass: float = 0.05) -> mujoco.MjSpec:
     body = spec.worldbody.add_body(name="cube")
     body.add_freejoint(name="cube_joint")
     body.add_geom(
-      name="cube_geom",
-      type=mujoco.mjtGeom.mjGEOM_BOX,
-      size=(cube_size,) * 3,
-      mass=mass,
-      rgba=(0.8, 0.2, 0.2, 1.0),
+        name="cube_geom",
+        type=mujoco.mjtGeom.mjGEOM_BOX,
+        size=(cube_size,) * 3,
+        mass=mass,
+        rgba=(0.8, 0.2, 0.2, 1.0),
     )
     return spec
 
@@ -49,7 +49,8 @@ def arx5_lift_cube_env_cfg(
     )
     cfg.rewards["lift"].params["asset_cfg"].site_names = ("grasp_site",)
 
-    fingertip_geoms = r"[lr]f_down(6|7|8|9|10|11)_collision"
+    # X5 gripper collision geoms: link7_collision, link8_collision
+    fingertip_geoms = r"link[78]_collision"
     cfg.events["fingertip_friction_slide"].params[
       "asset_cfg"
     ].geom_names = fingertip_geoms
@@ -61,7 +62,7 @@ def arx5_lift_cube_env_cfg(
     for sensor in cfg.scene.sensors:
         if sensor.name == "ee_ground_collision":
             assert isinstance(sensor, ContactSensorCfg)
-            sensor.primary.pattern = "link_6"
+            sensor.primary.pattern = "link6"
 
     cfg.viewer.body_name = "arm"
 

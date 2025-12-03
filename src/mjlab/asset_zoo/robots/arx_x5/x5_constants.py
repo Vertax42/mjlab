@@ -139,29 +139,30 @@ HOME_KEYFRAME = EntityCfg.InitialStateCfg(
 # Collision config.
 ##
 
+# X5 collision geoms: link6_1_collision, link7_collision, link8_collision
 GRIPPER_ONLY_COLLISION = CollisionCfg(
     geom_names_expr=(".*_collision",),
     contype={
-        "(link6|[lr]f)_.*_collision": 1,
+        "link[678].*_collision": 1,
         ".*_collision": 0,
     },
     conaffinity={
-        "(link6|[lr]f)_.*_collision": 1,
+        "link[678].*_collision": 1,
         ".*_collision": 0,
     },
     condim={
-        "[lr]f_down(6|7|8|9|10|11)_collision": 6,
+        "link[78]_collision": 6,
         ".*_collision": 3,
     },
     friction={
-        "[lr]f_down(6|7|8|9|10|11)_collision": (1, 5e-3, 5e-4),
+        "link[78]_collision": (1, 5e-3, 5e-4),
         ".*_collision": (0.6,),
     },
     solref={
-        "[lr]f_down(6|7|8|9|10|11)_collision": (0.01, 1),
+        "link[78]_collision": (0.01, 1),
     },
     priority={
-        "[lr]f_down(6|7|8|9|10|11)_collision": 1,
+        "link[78]_collision": 1,
     },
 )
 
@@ -169,10 +170,9 @@ GRIPPER_ONLY_COLLISION = CollisionCfg(
 # Final config.
 ##
 
-# Note: Actuators are defined in X5.xml with real robot PD values
-# Do not add Python actuators to avoid duplication
+# Actuators added via Python (same as YAM approach)
 ARTICULATION = EntityArticulationInfoCfg(
-    actuators=(),  # Empty - using XML actuators only
+    actuators=(ACTUATOR_EC_A4310, ACTUATOR_DM_J4310, ACTUATOR_DM_J4310_LINEAR_CRANK),
     soft_joint_pos_limit_factor=0.9,
 )
 
@@ -186,29 +186,16 @@ def get_x5_robot_cfg() -> EntityCfg:
     )
 
 
-# Action scale based on XML actuator PD values (matching real robot)
-# kp values from X5.xml: [80, 80, 80, 40, 10, 10, 5]
-# effort_limit estimated from real robot
-
-# X5_ACTION_SCALE: dict[str, float] = {}
-# for a in ARTICULATION.actuators:
-#     assert isinstance(a, BuiltinPositionActuatorCfg)
-#     e = a.effort_limit
-#     s = a.stiffness
-#     names = a.joint_names_expr
-#     assert e is not None
-#     for n in names:
-#         X5_ACTION_SCALE[n] = 0.25 * e / s
-
-X5_ACTION_SCALE: dict[str, float] = {
-    "joint1": 0.25 * 36.0 / 80.0,   # ~0.1125
-    "joint2": 0.25 * 36.0 / 80.0,   # ~0.1125
-    "joint3": 0.25 * 36.0 / 80.0,   # ~0.1125
-    "joint4": 0.25 * 10.0 / 40.0,   # ~0.0625
-    "joint5": 0.25 * 10.0 / 10.0,   # ~0.25
-    "joint6": 0.25 * 10.0 / 10.0,   # ~0.25
-    "left_finger": 0.25 * 1.0 / 5.0,  # ~0.05
-}
+# Compute action scale from actuator configs (same as YAM)
+X5_ACTION_SCALE: dict[str, float] = {}
+for a in ARTICULATION.actuators:
+    assert isinstance(a, BuiltinPositionActuatorCfg)
+    e = a.effort_limit
+    s = a.stiffness
+    names = a.joint_names_expr
+    assert e is not None
+    for n in names:
+        X5_ACTION_SCALE[n] = 0.25
 
 if __name__ == "__main__":
     import mujoco
