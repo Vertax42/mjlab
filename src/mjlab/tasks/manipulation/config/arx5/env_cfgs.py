@@ -49,8 +49,8 @@ def arx5_lift_cube_env_cfg(
     )
     cfg.rewards["lift"].params["asset_cfg"].site_names = ("grasp_site",)
 
-    # X5 gripper collision geoms: link7_collision, link8_collision
-    fingertip_geoms = r"link[78]_collision"
+    # X5 gripper collision geoms: link7_*_collision, link8_*_collision
+    fingertip_geoms = r"link[78]_.*_collision"
     cfg.events["fingertip_friction_slide"].params[
       "asset_cfg"
     ].geom_names = fingertip_geoms

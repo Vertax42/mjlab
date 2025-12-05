@@ -139,7 +139,7 @@ HOME_KEYFRAME = EntityCfg.InitialStateCfg(
 # Collision config.
 ##
 
-# X5 collision geoms: link6_1_collision, link7_collision, link8_collision
+# X5 collision geoms: link6_1_collision, link7_*_collision, link8_*_collision
 GRIPPER_ONLY_COLLISION = CollisionCfg(
     geom_names_expr=(".*_collision",),
     contype={
@@ -151,18 +151,18 @@ GRIPPER_ONLY_COLLISION = CollisionCfg(
         ".*_collision": 0,
     },
     condim={
-        "link[78]_collision": 6,
+        "link[78]_.*_collision": 6,
         ".*_collision": 3,
     },
     friction={
-        "link[78]_collision": (1, 5e-3, 5e-4),
+        "link[78]_.*_collision": (1, 5e-3, 5e-4),
         ".*_collision": (0.6,),
     },
     solref={
-        "link[78]_collision": (0.01, 1),
+        "link[78]_.*_collision": (0.01, 1),
     },
     priority={
-        "link[78]_collision": 1,
+        "link[78]_.*_collision": 1,
     },
 )
 
